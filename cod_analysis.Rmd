@@ -226,6 +226,7 @@ cod_toggle
 
 ```{r}
 long_category_perc = fiveyears %>% 
+  mutate(`COD Category` = fct_recode(`COD Category`, "deliberate act" = "fatal assault")) %>% 
   group_by(`COD Category`) %>% 
   summarise(n = n(), perc = n/nrow(fiveyears)*100) %>% 
   mutate(`COD Category` = fct_reorder(`COD Category`, n, min),
@@ -544,18 +545,12 @@ Subplot
                              yref = "paper", yanchor = "top", y = -0.05))
 )
 
+htmlwidgets::saveWidget(subplot, "subplot.html", selfcontained=TRUE)
 ```
 
+
 ```{r}
-plotList <- function(nplots){
-  lapply(seq_len(nplots), function(x) plot_ly())
-}
-(s1 <- subplot(plotList(2), nrows = 2 ))
-s2 <- subplot(plotList(2), nrows = 2)
-subplot(
-  plot_ly(), s1, s2, nrows =2, 
-  margin = 0.04
-)
+
 ```
 
 
