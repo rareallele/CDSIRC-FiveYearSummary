@@ -11,7 +11,7 @@ library(plotly)
 ```{r}
 data = read_csv("data.csv")
 
-exclusions <- readxl::read_xlsx("C:\\Users\\jagvan\\OneDrive - South Australia Government\\Code\\exclusions_2021.xlsx")$`Case Number`
+exclusions <- readxl::read_xlsx("C:\\Users\\jagvan\\OneDrive - South Australia Government\\Code\\exclusions_2022.xlsx")$`Case Number`
 
 # if can't connect to DB remotely below
 data = data %>% 
@@ -549,8 +549,42 @@ htmlwidgets::saveWidget(subplot, "subplot.html", selfcontained=TRUE)
 ```
 
 
+Yearly deaths by cause and age group
 ```{r}
+deaths_year_agegroup <- data %>% 
+  group_by(Year, `Age Group`) %>% 
+  summarise(n = n())
 
+bar_colours <- c("#FEB627", "#27B9FE", "sienna2", "slateblue2", "mediumseagreen", "maroon3")
+
+(year_cod_age <- plot_ly(data = deaths_year_agegroup,
+              type = "bar",
+              x = ~Year,
+              y = ~n,
+              color = ~fct_rev(`Age Group`),
+              colors = bar_colours,
+              hovertemplate = paste0("Number of deaths: ", "%{y}")) %>% 
+        
+        layout(autosize=T,
+               #margin = list(l=80, r=20, t=100, b=80, pad=4),
+               barmode = "stack",
+               yaxis = list(title = "Number of deaths",
+                            titlefont = list(size = 16),
+                            range = c(0, 159),
+                            tickfont = list(size=14)),
+               xaxis = list(title = "Year",
+                            titlefont = list(size = 16),
+                            tickfont = list(size=14),
+                            tick0 = 2005,
+                            dtick = 3),
+               #title = list(text = "")
+               legend = list(orientation='h',
+                             #x=2005,
+                             y=1,
+                             font = list(size=12))
+          ))
+
+htmlwidgets::saveWidget(year_cod_age, "year_cod_age.html")
 ```
 
 

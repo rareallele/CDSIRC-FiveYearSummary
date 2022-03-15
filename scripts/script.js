@@ -1,6 +1,10 @@
-function setIframe() {
-    var selection = document.getElementById("fig_select").value;
-    document.getElementById("figure-display").src = selection
+function setIframe(clickedButton) {
+    document.getElementById("figure-display").src = clickedButton.value;
+    const allButtons = document.querySelectorAll("button.button");
+    allButtons.forEach(function(button) {
+      button.classList.remove('activeButton')
+    });
+    clickedButton.classList.add('activeButton');
 }
 
 
