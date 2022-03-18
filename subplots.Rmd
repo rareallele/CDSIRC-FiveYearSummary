@@ -1,0 +1,271 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Category of death
+```{r}
+df = long_category_perc_children
+
+(long_cod_children = plot_ly(
+        type = 'bar',
+        orientation = 'h',
+        data = df,
+        x = ~perc,
+        y = ~fct_rev(`COD Category`),
+        color = I(custom_colours[[1]]),
+        hovertemplate = paste0("Number of deaths: ", df$n, "\n",
+                               "Percentage of deaths: ", round(df$perc,1), "% \n",
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population",
+                               "<extra></extra>")) %>% 
+  layout(xaxis = list(title = list(text = ""),
+                      ticksuffix = "%",
+                      range = c(0,91)),
+         yaxis = list(title = ""),
+         margin = list(l=0,r=0,t=80,b=30),
+         font = list(size = 14),
+         showlegend = FALSE,
+         title = list(text = ""))
+)
+```
+
+Remoteness
+```{r}
+df = filter(fiveyears, `Age (years)` == 0) %>% 
+  group_by(ra_name) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  left_join(postcode_population %>% 
+              filter(Year %in% seq(2016,2020),
+                     Age == 0) %>% 
+              group_by(ra_name) %>% 
+              summarise(pop = sum(adjusted_population)), 
+            by = "ra_name") %>% 
+  mutate(rate = n/pop*100000) %>% 
+  filter(!is.na(ra_name)) %>% 
+  mutate(ra_name = fct_relevel(ra_name, "Major Cities of Australia","Inner Regional Australia",
+                               "Outer Regional Australia","Remote Australia","Very Remote Australia")) %>% 
+  mutate(ra_name = fct_recode(ra_name, "Major Cities" = "Major Cities of Australia", "Inner Regional" = "Inner Regional Australia",
+                              "Outer Regional" = "Outer Regional Australia", "Remote" = "Remote Australia",
+                              "Very Remote" = "Very Remote Australia"))
+
+
+(remoteness_infants = plot_ly(
+        df,
+        type = 'bar',
+        orientation = 'h',
+        x = ~perc,
+        y = ~fct_rev(ra_name),
+        color = I(custom_colours[[3]]),
+        hovertemplate = paste0("Number of deaths: ", df$n, "\n",
+                               "Percentage of deaths: ", round(df$perc,1), "% \n",
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+  layout(title = list(text = ""),
+         xaxis = list(title = list(text = "\n", standoff = 15),
+                      ticksuffix = "%",
+                      range = c(0, 75)),
+         yaxis = list(title = ""),
+         margin = list(l=0,r=0,t=70,b=30),
+         font = list(size = 14))
+)
+```
+
+SEIFA
+```{r}
+df = filter(fiveyears, `Age (years)` == 0) %>% 
+  group_by(SEIFA_disadvantage) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  left_join(postcode_population %>% 
+                filter(Year %in% seq(2016,2020),
+                       Age == 0) %>% 
+                group_by(SEIFA_disadvantage) %>% 
+                summarise(pop = sum(adjusted_population)), 
+            by = "SEIFA_disadvantage") %>% 
+  mutate(rate = n/pop*100000,
+         SEIFA_disadvantage = as.factor(SEIFA_disadvantage)) %>% 
+  filter(!is.na(SEIFA_disadvantage)) 
+
+(seifa_infants = plot_ly(
+        df,
+        type = 'bar',
+        orientation = 'h',
+        x = ~perc,
+        y = ~fct_rev(SEIFA_disadvantage),
+        color = I(custom_colours[[2]]),
+        hovertemplate = paste0("Number of deaths: ", df$n, "\n",
+                               "Percentage of deaths: ", round(df$perc,1), "% \n",
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+  layout(title = list(text = ""),
+         xaxis = list(title = list(text = ""),
+                      ticksuffix = "%",
+                      range = c(0,41)),
+         yaxis = list(title = list(text = "SEIFA Quintile", font = list(size = 14))),
+         margin = list(l=50,r=0,t=70,b=30),
+         font = list(size = 14))
+)
+```
+
+ATSI
+```{r}
+df = filter(fiveyears, `Age (years)` == 0) %>% 
+  group_by(`Cultural Background`) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  left_join(population %>% 
+              filter(Year %in% seq(2016,2020),
+                     `Age (years)` == 0) %>% 
+              group_by(`Cultural Background`) %>% 
+              summarise(pop = sum(adjusted_population)), 
+            by = "Cultural Background") %>% 
+  mutate(rate = n/pop*100000)
+
+(atsi_infants = plot_ly(
+        df,
+        type = 'bar',
+        orientation = 'h',
+        x = ~perc,
+        y = ~`Cultural Background`,
+        color = I(custom_colours[[1]]),
+        hovertemplate = paste0("Number of deaths: ", df$n, "\n",
+                               "Percentage of deaths: ", round(df$perc,1), "% \n",
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+  layout(title = list(text = ""),
+         xaxis = list(title = list(text = "\n", standoff = 15),
+                      ticksuffix = "%",
+                      range = c(0, 95)),
+         yaxis = list(title = "",
+                      tickvals = list("ATSI","Other"),
+                      ticktext = list("Aboriginal  ","Other  ")),
+         margin = list(l=0,r=0,t=70,b=30),
+         font = list(size = 14))
+)
+```
+
+Sex
+```{r}
+df = filter(fiveyears, `Age (years)` >= 0) %>% 
+  group_by(Sex) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` >= 0))*100) %>% 
+  left_join(population %>% 
+              filter(Year %in% seq(2016,2020),
+                     `Age (years)` >= 0) %>% 
+              group_by(Sex) %>% 
+              summarise(pop = sum(adjusted_population)), 
+            by = "Sex") %>% 
+  mutate(rate = n/pop*100000) %>% 
+  filter(Sex != "uncertain")
+
+(sex_all = plot_ly(
+        df,
+        type = 'bar',
+        orientation = 'h',
+        x = ~perc,
+        y = ~Sex,
+        color = I(custom_colours[[5]]),
+        hovertemplate = paste0("Number of deaths: ", df$n, "\n",
+                               "Percentage of deaths: ", round(df$perc,1), "% \n",
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+  layout(title = list(text = ""),
+         xaxis = list(title = list(text = "Proportion of deaths", standoff = 15),
+                      ticksuffix = "%",
+                      range = c(0, 55)),
+         yaxis = list(title = "",
+                      tickvals = list("Female","Male"),
+                      ticktext = list("Female  ", "Male  ")),
+         margin = list(l=0,r=0,t=70,b=30),
+         font = list(size = 14))
+)
+```
+
+Child protection
+```{r}
+df = filter(fiveyears, `Age (years)` == 0) %>% 
+  group_by(`CP Contact`) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  filter(!is.na(`CP Contact`))
+
+(cp_contact_infants = plot_ly(
+        df,
+        type = 'bar',
+        orientation = 'h',
+        x = ~perc,
+        y = ~`CP Contact`,
+        color = I(custom_colours[[4]]),
+        hovertemplate = paste0("Number of deaths: ", df$n, "\n", 
+                               "Percentage of deaths: ", round(df$perc,1), "% \n",
+                               "<extra></extra>")) %>% 
+  layout(title = list(text = ""),
+         xaxis = list(title = list(text = ""),
+                      ticksuffix = "%",
+                      range = c(0,81)),
+         yaxis = list(title = list(text = "Child protection \ncontact", font = list(size = 14)),
+                      tickvals = list("No","Yes"),
+                      ticktext = list("No  ", "Yes  ")),
+         margin = list(l=0,r=0,t=70,b=30),
+         font = list(size = 14))
+)
+```
+
+Subplots
+```{r}
+(subplot_all = subplot(long_cod_all, 
+                   subplot(age_group_all, sex_all, nrows=2, margin = c(0,0,0.1,0.1)), 
+                   subplot(seifa_all, remoteness_all, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE), 
+                   subplot(cp_contact_all, atsi_all, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE),
+                   nrows = 2,
+                   margin = c(0.1, 0.05, 0.05, 0.05),
+                   shareY = FALSE, titleY = TRUE,
+                   titleX = TRUE) %>% 
+   layout(showlegend = FALSE,
+          title = list(text = "Child deaths in South Australia \n5-year summary (2016–2020)",
+                       font = list(size = 17)),
+          annotations = list(text = "Proportion of deaths",
+                             font = list(size = 16),
+                             showarrow = FALSE,
+                             xref = "paper", x = 0.45,
+                             yref = "paper", yanchor = "top", y = -0.05))
+)
+
+htmlwidgets::saveWidget(subplot_all, "subplot_all.html", selfcontained=TRUE)
+
+
+(subplot_children = subplot(long_cod_children, 
+                   subplot(age_group_all, sex_children, nrows=2, margin = c(0,0,0.1,0.1)), 
+                   subplot(seifa_children, remoteness_children, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE), 
+                   subplot(cp_contact_children, atsi_children, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE),
+                   nrows = 2,
+                   margin = c(0.1, 0.05, 0.05, 0.05),
+                   shareY = FALSE, titleY = TRUE,
+                   titleX = TRUE) %>% 
+   layout(showlegend = FALSE,
+          title = list(text = "Child deaths in South Australia \n5-year summary (2016–2020)",
+                       font = list(size = 17)),
+          annotations = list(text = "Proportion of deaths",
+                             font = list(size = 16),
+                             showarrow = FALSE,
+                             xref = "paper", x = 0.45,
+                             yref = "paper", yanchor = "top", y = -0.05))
+)
+
+htmlwidgets::saveWidget(subplot_children, "subplot_children.html", selfcontained=TRUE)
+
+
+(subplot_infants = subplot(long_cod_infants, 
+                   subplot(age_group_all, sex_infants, nrows=2, margin = c(0,0,0.1,0.1)), 
+                   subplot(seifa_infants, remoteness_infants, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE), 
+                   subplot(cp_contact_infants, atsi_infants, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE),
+                   nrows = 2,
+                   margin = c(0.1, 0.05, 0.05, 0.05),
+                   shareY = FALSE, titleY = TRUE,
+                   titleX = TRUE) %>% 
+   layout(showlegend = FALSE,
+          title = list(text = "Child deaths in South Australia \n5-year summary (2016–2020)",
+                       font = list(size = 17)),
+          annotations = list(text = "Proportion of deaths",
+                             font = list(size = 16),
+                             showarrow = FALSE,
+                             xref = "paper", x = 0.45,
+                             yref = "paper", yanchor = "top", y = -0.05))
+)
+
+htmlwidgets::saveWidget(subplot_infants, "subplot_infants.html", selfcontained=TRUE)
+```
+

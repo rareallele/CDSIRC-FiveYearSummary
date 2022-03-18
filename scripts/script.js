@@ -1,10 +1,37 @@
 function setIframe(clickedButton) {
     document.getElementById("figure-display").src = clickedButton.value;
-    const allButtons = document.querySelectorAll("button.button");
-    allButtons.forEach(function(button) {
+
+    const subButtons = document.querySelectorAll("button.sub-button");
+
+    switch (clickedButton.id) {
+      case 'b1':
+        clickedButton.classList.add('activeButton');      
+        subButtons.forEach(function(button) {
+          button.classList.remove('activeButton')
+        });
+        document.querySelector('button.sub-button').classList.add('activeButton');
+        document.getElementById('b2').classList.remove('activeButton');
+        break;
+
+      case 'b2':
+        subButtons.forEach(function(button) {
+          button.classList.remove('activeButton')
+        });
+        document.getElementById('b1').classList.remove('activeButton');
+    };
+
+    clickedButton.classList.add('activeButton');
+}
+
+function subButtonSetIframe(clickedButton) {
+    const subButtons = document.querySelectorAll("button.sub-button");
+    subButtons.forEach(function(button) {
       button.classList.remove('activeButton')
     });
     clickedButton.classList.add('activeButton');
+    document.getElementById("figure-display").src = clickedButton.value;
+    document.getElementById("b1").classList.add('activeButton');
+    document.getElementById("b2").classList.remove('activeButton');
 }
 
 

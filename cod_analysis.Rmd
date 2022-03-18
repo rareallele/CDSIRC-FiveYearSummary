@@ -16,7 +16,8 @@ exclusions <- readxl::read_xlsx("C:\\Users\\jagvan\\OneDrive - South Australia G
 # if can't connect to DB remotely below
 data = data %>% 
   filter(!`Case Number` %in% exclusions,
-         Year %in% seq(2005,2020)) %>% # filter out exclusions
+         Year %in% seq(2005,2020)) %>% # filter out exclusions 
+  mutate(`COD Category` = fct_recode(`COD Category`, "deliberate act" = "fatal assault")) %>% 
   hablar::convert(hablar::fct(`Case Number`, Sex, SUDI, `Age Group`, `CP Contact`, 
                               `Cultural Background`, `COD Category`)) %>% 
   mutate(`Age Group` = 
@@ -24,7 +25,7 @@ data = data %>%
                      "10 to 14 years", "15 to 17 years"),
          Sex = fct_recode(Sex, Male = "male", Female = "female"),
          Supercategory = as.factor(case_when(
-           `COD Category` %in% c("accident","drowning","fatal assault","fire-related",
+           `COD Category` %in% c("accident","drowning","deliberate act","fire-related",
                                  "neglect","suicide","transport-related" ) ~ "external",
            `COD Category` %in% c("medical","natural") ~ "natural",
            `COD Category` %in% c("SIDS","undetermined") ~ "undetermined",
@@ -226,7 +227,6 @@ cod_toggle
 
 ```{r}
 long_category_perc = fiveyears %>% 
-  mutate(`COD Category` = fct_recode(`COD Category`, "deliberate act" = "fatal assault")) %>% 
   group_by(`COD Category`) %>% 
   summarise(n = n(), perc = n/nrow(fiveyears)*100) %>% 
   mutate(`COD Category` = fct_reorder(`COD Category`, n, min),
@@ -238,15 +238,20 @@ long_category_perc_infants = fiveyears %>%
   summarise(n = n(), perc = n/nrow(fiveyears %>% filter(`Age (years)` == 0))*100) %>% 
   add_row(`COD Category` = "neglect", perc = 0, n = 0) %>% 
   add_row(`COD Category` = "fire-related", perc = 0, n = 0) %>% 
-  mutate(`COD Category` = fct_reorder(`COD Category`, n, min),
-         rate = n/cat_pop_infants[[1,1]]*100000) 
+  add_row(`COD Category` = "suicide", perc = 0, n = 0) %>%
+  add_row(`COD Category` = "drowning", perc = 0, n = 0) %>%
+  mutate(`COD Category` = fct_relevel(`COD Category`, "natural","transport-related","undetermined","suicide","accident",
+                                      "drowning","deliberate act","pending","SIDS","fire-related","neglect"),
+         rate = n/cat_pop_infants[[1,1]]*100000)
   
 
 long_category_perc_children = fiveyears %>%
   filter(`Age (years)` > 0) %>% 
   group_by(`COD Category`) %>% 
   summarise(n = n(), perc = n/nrow(fiveyears %>% filter(`Age (years)` == 0))*100) %>% 
-  mutate(`COD Category` = fct_reorder(`COD Category`, n, min),
+  add_row(`COD Category` = "SIDS", perc = 0, n = 0) %>% 
+  mutate(`COD Category` = fct_relevel(`COD Category`, "natural","transport-related","undetermined","suicide","accident",
+                                      "drowning","deliberate act","pending","SIDS","fire-related","neglect"),
          rate = n/cat_pop_children[[1,1]]*100000)
 
 # No toggle

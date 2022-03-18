@@ -18,15 +18,20 @@
     </div>
 
     <div class="row">
-        <button class="button activeButton" value="Figures/subplot.html" onclick="setIframe(this)">Five-year data summary</button>
-        <button class="button" value="Figures/year_cod_age.html" onclick="setIframe(this)">Yearly deaths by age and cause</button>
+        <button id="b1" class="button activeButton" value="Figures/subplot_all.html" onclick="setIframe(this)">Five-year data summary</button>
+        <button id="b2" class="button" value="Figures/year_cod_age.html" onclick="setIframe(this)">Yearly deaths by age and cause</button>
+    </div>
+    <div class="row">
+        <button class="sub-button activeButton" value="Figures/subplot_all.html" onclick="subButtonSetIframe(this)">All</button>
+        <button class="sub-button" value="Figures/subplot_children.html" onclick="subButtonSetIframe(this)">Children</button>
+        <button class="sub-button" value="Figures/subplot_infants.html" onclick="subButtonSetIframe(this)">Infants</button>
     </div>
 
 
     <div class="row">
 
         <div class="container">
-            <iframe class="responsive-iframe" src="Figures/subplot.html" id="figure-display"></iframe>
+            <iframe class="responsive-iframe" src="Figures/subplot_all.html" id="figure-display"></iframe>
         </div>
 
     </div>
