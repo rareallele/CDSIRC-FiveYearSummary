@@ -224,7 +224,8 @@ Subplots
                              yref = "paper", yanchor = "top", y = -0.05))
 )
 
-htmlwidgets::saveWidget(subplot_all, "subplot_all.html", selfcontained=TRUE)
+htmlwidgets::saveWidget(partial_bundle(subplot_all), "Figures/subplot_all.html", selfcontained=FALSE,
+                        libdir = "index_files")
 
 
 (subplot_children = subplot(long_cod_children, 
@@ -245,7 +246,8 @@ htmlwidgets::saveWidget(subplot_all, "subplot_all.html", selfcontained=TRUE)
                              yref = "paper", yanchor = "top", y = -0.05))
 )
 
-htmlwidgets::saveWidget(subplot_children, "subplot_children.html", selfcontained=TRUE)
+htmlwidgets::saveWidget(partial_bundle(subplot_children), "Figures/subplot_children.html",
+                        selfcontained=FALSE, libdir = "index_files")
 
 
 (subplot_infants = subplot(long_cod_infants, 
@@ -266,6 +268,7 @@ htmlwidgets::saveWidget(subplot_children, "subplot_children.html", selfcontained
                              yref = "paper", yanchor = "top", y = -0.05))
 )
 
-htmlwidgets::saveWidget(subplot_infants, "subplot_infants.html", selfcontained=TRUE)
+htmlwidgets::saveWidget(partial_bundle(subplot_infants), "Figures/subplot_infants.html",
+                        selfcontained=FALSE, libdir = "index_files")
 ```
 

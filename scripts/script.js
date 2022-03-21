@@ -1,7 +1,7 @@
 function setIframe(clickedButton) {
     document.getElementById("figure-display").src = clickedButton.value;
 
-    const subButtons = document.querySelectorAll("button.sub-button");
+    var subButtons = document.querySelectorAll("button.sub-button");
 
     switch (clickedButton.id) {
       case 'b1':
@@ -24,7 +24,7 @@ function setIframe(clickedButton) {
 }
 
 function subButtonSetIframe(clickedButton) {
-    const subButtons = document.querySelectorAll("button.sub-button");
+    var subButtons = document.querySelectorAll("button.sub-button");
     subButtons.forEach(function(button) {
       button.classList.remove('activeButton')
     });

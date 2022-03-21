@@ -589,7 +589,8 @@ bar_colours <- c("#FEB627", "#27B9FE", "sienna2", "slateblue2", "mediumseagreen"
                              font = list(size=12))
           ))
 
-htmlwidgets::saveWidget(year_cod_age, "year_cod_age.html")
+htmlwidgets::saveWidget(partial_bundle(year_cod_age), "Figures/year_cod_age.html",
+                        selfcontained = FALSE, libdir = "index_files")
 ```
 
 
