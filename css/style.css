@@ -3,7 +3,7 @@
     overflow: auto;
     width: 100%;
     max-width: 1200px;
-    padding-top: 76.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+    padding-top: 85.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
   }
   
   /* Then style the iframe to fit in the container div with full height and width */
@@ -33,6 +33,11 @@
 h2 {
     font-size: 1em;
 }
+
+select {
+  width: 100%;
+}
+
 
 
 /* Style the buttons that are used to open and close the accordion panel */
@@ -96,18 +101,23 @@ button:focus {
   padding: 15px 32px;
   display: inline-flex;
   margin: left;
-  width: 16.667%;
+  width: 33.33333%;
   height: 35px;
   align-items: center;
   text-align: center;
   justify-content: space-around;
 }
 
+/* Small screens */
 @media (max-width: 900px){
   .text-section, .row {
       width: 80%;
   }
+  button {
+    font-size: 0.8em;
+  }
 }
+/* Medium to large screens */
 @media (min-width: 1200px){
   .text-section, .row {
       width: 70%;

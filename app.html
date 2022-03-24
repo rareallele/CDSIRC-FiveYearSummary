@@ -18,10 +18,18 @@
     </div>
 
     <div class="row">
-        <button id="b1" class="button activeButton" value="Figures/subplot_all.html" onclick="setIframe(this)">Five-year data summary</button>
-        <button id="b2" class="button" value="Figures/year_cod_age.html" onclick="setIframe(this)">Yearly deaths by age and cause</button>
+        <div id="dropdown" style="width: 100%">
+            <label for="fig_select"><strong style="font-size: 1em;">Select figure:</strong></label><br>
+            <select id="fig_select" class="form-control" style="width: 100%" onchange="setIframe(this)">
+                <option value="Figures/subplot_all.html">Figure 1: Five-year data summary</option>
+                <option value="Figures/year_age_group.html">Figure 2: Yearly deaths by age group</option>
+                <option value="Figures/cod_age_group.html">Figure 3: Deaths by age group and cause</option>
+            </select>
+            <br>
+        </div>
     </div>
-    <div class="row">
+
+    <div class="row" id="buttonBlock">
         <button class="sub-button activeButton" value="Figures/subplot_all.html" onclick="subButtonSetIframe(this)">All</button>
         <button class="sub-button" value="Figures/subplot_children.html" onclick="subButtonSetIframe(this)">Children</button>
         <button class="sub-button" value="Figures/subplot_infants.html" onclick="subButtonSetIframe(this)">Infants</button>

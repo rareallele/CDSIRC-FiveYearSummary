@@ -5,19 +5,19 @@ output: html_notebook
 
 Category of death
 ```{r}
-df = long_category_perc_children
+df = long_category_perc
 
-(long_cod_children = plot_ly(
+(long_cod_all = plot_ly(
         type = 'bar',
         orientation = 'h',
         data = df,
         x = ~perc,
-        y = ~fct_rev(`COD Category`),
+        y = ~`COD Category`,
         color = I(custom_colours[[1]]),
         hovertemplate = paste0("Number of deaths: ", df$n, "\n",
                                "Percentage of deaths: ", round(df$perc,1), "% \n",
                                "Death rate: ", round(df$rate,1), " deaths per 100,000 population",
-                               "<extra></extra>")) %>% 
+                               "<extra>", df$`COD Category`, "</extra>")) %>% 
   layout(xaxis = list(title = list(text = ""),
                       ticksuffix = "%",
                       range = c(0,91)),
@@ -31,12 +31,12 @@ df = long_category_perc_children
 
 Remoteness
 ```{r}
-df = filter(fiveyears, `Age (years)` == 0) %>% 
+df = filter(fiveyears, `Age (years)` >= 0) %>% 
   group_by(ra_name) %>% 
-  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` >= 0))*100) %>% 
   left_join(postcode_population %>% 
               filter(Year %in% seq(2016,2020),
-                     Age == 0) %>% 
+                     Age >= 0) %>% 
               group_by(ra_name) %>% 
               summarise(pop = sum(adjusted_population)), 
             by = "ra_name") %>% 
@@ -49,7 +49,7 @@ df = filter(fiveyears, `Age (years)` == 0) %>%
                               "Very Remote" = "Very Remote Australia"))
 
 
-(remoteness_infants = plot_ly(
+(remoteness_all = plot_ly(
         df,
         type = 'bar',
         orientation = 'h',
@@ -58,7 +58,7 @@ df = filter(fiveyears, `Age (years)` == 0) %>%
         color = I(custom_colours[[3]]),
         hovertemplate = paste0("Number of deaths: ", df$n, "\n",
                                "Percentage of deaths: ", round(df$perc,1), "% \n",
-                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra>", df$ra_name,"</extra>")) %>% 
   layout(title = list(text = ""),
          xaxis = list(title = list(text = "\n", standoff = 15),
                       ticksuffix = "%",
@@ -71,20 +71,23 @@ df = filter(fiveyears, `Age (years)` == 0) %>%
 
 SEIFA
 ```{r}
-df = filter(fiveyears, `Age (years)` == 0) %>% 
+seifa_description = data.frame(SEIFA_disadvantage = as.factor(c(1,2,3,4,5)),
+                               SEIFA_desc = c("1 (most disadvantaged)","2","3","4","5 (least disadvantaged)"))
+df = filter(fiveyears, `Age (years)` > 0) %>% 
   group_by(SEIFA_disadvantage) %>% 
-  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` > 0))*100) %>% 
   left_join(postcode_population %>% 
                 filter(Year %in% seq(2016,2020),
-                       Age == 0) %>% 
+                       Age > 0) %>% 
                 group_by(SEIFA_disadvantage) %>% 
                 summarise(pop = sum(adjusted_population)), 
             by = "SEIFA_disadvantage") %>% 
   mutate(rate = n/pop*100000,
          SEIFA_disadvantage = as.factor(SEIFA_disadvantage)) %>% 
-  filter(!is.na(SEIFA_disadvantage)) 
+  filter(!is.na(SEIFA_disadvantage)) %>% 
+  left_join(seifa_description, on = "SEIFA_disadvantage")
 
-(seifa_infants = plot_ly(
+(seifa_children = plot_ly(
         df,
         type = 'bar',
         orientation = 'h',
@@ -93,7 +96,7 @@ df = filter(fiveyears, `Age (years)` == 0) %>%
         color = I(custom_colours[[2]]),
         hovertemplate = paste0("Number of deaths: ", df$n, "\n",
                                "Percentage of deaths: ", round(df$perc,1), "% \n",
-                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+                               "Death rate: ", round(df$rate,1), " deaths per 100,000 population", "<extra>", "Quintile: ", df$SEIFA_desc,"</extra>")) %>% 
   layout(title = list(text = ""),
          xaxis = list(title = list(text = ""),
                       ticksuffix = "%",
@@ -177,12 +180,12 @@ df = filter(fiveyears, `Age (years)` >= 0) %>%
 
 Child protection
 ```{r}
-df = filter(fiveyears, `Age (years)` == 0) %>% 
+df = filter(fiveyears, `Age (years)` >= 0) %>% 
   group_by(`CP Contact`) %>% 
-  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` == 0))*100) %>% 
+  summarise(n = n(), perc = n/nrow(filter(fiveyears, `Age (years)` >= 0))*100) %>% 
   filter(!is.na(`CP Contact`))
 
-(cp_contact_infants = plot_ly(
+(cp_contact_all = plot_ly(
         df,
         type = 'bar',
         orientation = 'h',
@@ -207,7 +210,7 @@ df = filter(fiveyears, `Age (years)` == 0) %>%
 Subplots
 ```{r}
 (subplot_all = subplot(long_cod_all, 
-                   subplot(age_group_all, sex_all, nrows=2, margin = c(0,0,0.1,0.1)), 
+                   subplot(age_group_all, sex_all, nrows=2, margin = c(0,0,0.1,0.1), heights = c(0.6,0.4)), 
                    subplot(seifa_all, remoteness_all, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE), 
                    subplot(cp_contact_all, atsi_all, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE),
                    nrows = 2,
@@ -229,7 +232,7 @@ htmlwidgets::saveWidget(partial_bundle(subplot_all), "Figures/subplot_all.html",
 
 
 (subplot_children = subplot(long_cod_children, 
-                   subplot(age_group_all, sex_children, nrows=2, margin = c(0,0,0.1,0.1)), 
+                   subplot(age_group_all, sex_children, nrows=2, margin = c(0,0,0.1,0.1), heights = c(0.6,0.4)), 
                    subplot(seifa_children, remoteness_children, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE), 
                    subplot(cp_contact_children, atsi_children, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE),
                    nrows = 2,
@@ -251,7 +254,7 @@ htmlwidgets::saveWidget(partial_bundle(subplot_children), "Figures/subplot_child
 
 
 (subplot_infants = subplot(long_cod_infants, 
-                   subplot(age_group_all, sex_infants, nrows=2, margin = c(0,0,0.1,0.1)), 
+                   subplot(age_group_all, sex_infants, nrows=2, margin = c(0,0,0.1,0.1), heights = c(0.6,0.4)), 
                    subplot(seifa_infants, remoteness_infants, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE), 
                    subplot(cp_contact_infants, atsi_infants, nrows=2, margin = c(0,0,0.1,0.1), shareY = FALSE, titleY = TRUE, titleX = TRUE),
                    nrows = 2,
@@ -270,5 +273,9 @@ htmlwidgets::saveWidget(partial_bundle(subplot_children), "Figures/subplot_child
 
 htmlwidgets::saveWidget(partial_bundle(subplot_infants), "Figures/subplot_infants.html",
                         selfcontained=FALSE, libdir = "index_files")
+```
+
+```{r}
+subplot_all
 ```
 

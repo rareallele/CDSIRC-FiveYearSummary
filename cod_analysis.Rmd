@@ -347,14 +347,14 @@ age_group_perc = fiveyears %>%
          `Age Group` = fct_relevel(`Age Group`, "< 28 days", "1 to 11 months", "1 to 4 years", "5 to 9 years",
                                    "10 to 14 years", "15 to 17 years"))
 
-(age_group = plot_ly(age_group_perc,
+(age_group_all = plot_ly(age_group_perc,
         type = 'bar',
         orientation = 'h',
         x = ~perc,
         y = ~fct_rev(`Age Group`),
         color = I(custom_colours[[2]]),
         hovertemplate = paste0("Number of deaths: ", age_group_perc$n, "\n",
-                               "Death rate: ", round(age_group_perc$rate,1), " deaths per 100,000 population", "<extra></extra>")) %>% 
+                               "Death rate: ", round(age_group_perc$rate,1), " deaths per 100,000 population", "<extra>", age_group_perc$`Age Group`,"</extra>")) %>% 
   layout(title = list(text = ""),
          xaxis = list(title = list(text = "Proportion of deaths", standoff = 15),
                       ticksuffix = "%"),
@@ -554,7 +554,7 @@ htmlwidgets::saveWidget(subplot, "subplot.html", selfcontained=TRUE)
 ```
 
 
-Yearly deaths by cause and age group
+Yearly deaths by age group
 ```{r}
 deaths_year_agegroup <- data %>% 
   group_by(Year, `Age Group`) %>% 
@@ -562,7 +562,7 @@ deaths_year_agegroup <- data %>%
 
 bar_colours <- c("#FEB627", "#27B9FE", "sienna2", "slateblue2", "mediumseagreen", "maroon3")
 
-(year_cod_age <- plot_ly(data = deaths_year_agegroup,
+(year_age_group <- plot_ly(data = deaths_year_agegroup,
               type = "bar",
               x = ~Year,
               y = ~n,
@@ -589,7 +589,45 @@ bar_colours <- c("#FEB627", "#27B9FE", "sienna2", "slateblue2", "mediumseagreen"
                              font = list(size=12))
           ))
 
-htmlwidgets::saveWidget(partial_bundle(year_cod_age), "Figures/year_cod_age.html",
+htmlwidgets::saveWidget(partial_bundle(year_cod_age), "Figures/year_age_group.html",
+                        selfcontained = FALSE, libdir = "index_files")
+```
+
+Death by age group and cause of death category
+```{r}
+deaths_cod_agegroup <- fiveyears %>% 
+  group_by(`Age Group`, `COD Category`) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  complete(`Age Group`, `COD Category`, fill = list(n = 0)) %>% 
+  mutate(`COD Category` = fct_relevel(`COD Category`, "natural", "transport-related", "undetermined"))
+
+(cod_age_group <- plot_ly(data = deaths_cod_agegroup,
+              type = "bar",
+              x = ~`Age Group`,
+              y = ~n,
+              color = ~`COD Category`,
+              colors = bar_colours,
+              hovertemplate = paste0("Number of deaths: ", "%{y}")) %>% 
+        
+        layout(autosize=T,
+               margin = list(l=10, r=10, t=100, b=20, pad=4),
+               barmode = "stack",
+               yaxis = list(title = "Number of deaths",
+                            titlefont = list(size = 16),
+                            range = c(0, 170),
+                            tickfont = list(size=14)),
+               xaxis = list(title = "Age group",
+                            titlefont = list(size = 16),
+                            tickfont = list(size=14)),
+               #title = list(text = "")
+               legend = list(orientation='h',
+                             y=170,
+                             y=1,
+                             font = list(size=12))
+          ))
+
+htmlwidgets::saveWidget(partial_bundle(cod_age_group), "Figures/cod_age_group.html",
                         selfcontained = FALSE, libdir = "index_files")
 ```
 

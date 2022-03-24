@@ -1,26 +1,16 @@
-function setIframe(clickedButton) {
-    document.getElementById("figure-display").src = clickedButton.value;
-
-    var subButtons = document.querySelectorAll("button.sub-button");
-
-    switch (clickedButton.id) {
-      case 'b1':
-        clickedButton.classList.add('activeButton');      
-        subButtons.forEach(function(button) {
-          button.classList.remove('activeButton')
-        });
-        document.querySelector('button.sub-button').classList.add('activeButton');
-        document.getElementById('b2').classList.remove('activeButton');
-        break;
-
-      case 'b2':
-        subButtons.forEach(function(button) {
-          button.classList.remove('activeButton')
-        });
-        document.getElementById('b1').classList.remove('activeButton');
-    };
-
-    clickedButton.classList.add('activeButton');
+function setIframe() {
+  let selection = document.getElementById("fig_select").value;
+  document.getElementById("figure-display").src = selection
+  buttons = document.querySelector('#buttonBlock')
+  switch(selection) {
+    case 'Figures/subplot_all.html':
+      buttons.style.display = 'flex';
+      document.querySelector('.container').style.paddingTop = '85%';
+      break;
+    default:
+      buttons.style.display = 'none';
+      document.querySelector('.container').style.paddingTop = '65%';
+  }
 }
 
 function subButtonSetIframe(clickedButton) {
@@ -30,10 +20,7 @@ function subButtonSetIframe(clickedButton) {
     });
     clickedButton.classList.add('activeButton');
     document.getElementById("figure-display").src = clickedButton.value;
-    document.getElementById("b1").classList.add('activeButton');
-    document.getElementById("b2").classList.remove('activeButton');
 }
-
 
 function openPanel() {
     var panel = document.getElementById("panel");
