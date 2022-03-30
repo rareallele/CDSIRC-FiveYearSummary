@@ -6,6 +6,11 @@ function setIframe() {
     case 'Figures/subplot_all.html':
       buttons.style.display = 'flex';
       document.querySelector('.container').style.paddingTop = '85%';
+      let subButtons = document.querySelectorAll("button.sub-button");
+      subButtons.forEach(function(button) {
+        button.classList.remove('activeButton')
+      });
+      document.querySelector('button.sub-button').classList.add('activeButton');
       break;
     default:
       buttons.style.display = 'none';
