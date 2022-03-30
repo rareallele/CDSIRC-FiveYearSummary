@@ -1,0 +1,73 @@
+.if-container {
+  position: relative;
+  overflow: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-top: 65%; 
+}
+  
+  /* Then style the iframe to fit in the container div with full height and width */
+.responsive-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}  
+
+.row {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2 {
+    font-size: 1em;
+}
+
+select {
+  width: 100%;
+}
+  
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .row .activeButton, .cod-sub-button:hover {
+  background-color: #ccc;
+}
+
+
+button:focus {
+  outline: none;
+}
+
+.cod-sub-button {
+  background-color: #eee; 
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  display: inline-flex;
+  margin: left;
+  width: 33.33333%;
+  height: 35px;
+  align-items: center;
+  text-align: center;
+  justify-content: space-around;
+}
+
+/* Small screens */
+@media (max-width: 900px){
+  .text-section, .row {
+      width: 80%;
+  }
+  button {
+    font-size: 0.8em;
+  }
+}
+/* Medium to large screens */
+@media (min-width: 1200px){
+  .text-section, .row {
+      width: 70%;
+  }
+}
