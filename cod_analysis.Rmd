@@ -354,6 +354,7 @@ age_group_perc = fiveyears %>%
         y = ~fct_rev(`Age Group`),
         color = I(custom_colours[[2]]),
         hovertemplate = paste0("Number of deaths: ", age_group_perc$n, "\n",
+                               "Percentage of deaths: ", round(age_group_perc$perc, 1), "%\n",
                                "Death rate: ", round(age_group_perc$rate,1), " deaths per 100,000 population", "<extra>", age_group_perc$`Age Group`,"</extra>")) %>% 
   layout(title = list(text = ""),
          xaxis = list(title = list(text = "Proportion of deaths", standoff = 15),
