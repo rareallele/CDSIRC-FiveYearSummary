@@ -572,7 +572,7 @@ bar_colours <- c("#FEB627", "#27B9FE", "sienna2", "slateblue2", "mediumseagreen"
               hovertemplate = paste0("Number of deaths: ", "%{y}")) %>% 
         
         layout(autosize=T,
-               #margin = list(l=80, r=20, t=100, b=80, pad=4),
+               margin = list(l=10, r=20, t=80, b=20, pad=4),
                barmode = "stack",
                yaxis = list(title = "Number of deaths",
                             titlefont = list(size = 16),
@@ -583,14 +583,15 @@ bar_colours <- c("#FEB627", "#27B9FE", "sienna2", "slateblue2", "mediumseagreen"
                             tickfont = list(size=14),
                             tick0 = 2005,
                             dtick = 3),
-               #title = list(text = "")
+               title = list(text = "Child deaths by year and age group \nSouth Australia, 2005–2020",
+                            y = 0.93, yanchor = "bottom"),
                legend = list(orientation='h',
                              #x=2005,
                              y=1,
                              font = list(size=12))
           ))
 
-htmlwidgets::saveWidget(partial_bundle(year_cod_age), "Figures/year_age_group.html",
+htmlwidgets::saveWidget(partial_bundle(year_age_group), "Figures/year_age_group.html",
                         selfcontained = FALSE, libdir = "index_files")
 ```
 
@@ -612,7 +613,7 @@ deaths_cod_agegroup <- fiveyears %>%
               hovertemplate = paste0("Number of deaths: ", "%{y}")) %>% 
         
         layout(autosize=T,
-               margin = list(l=10, r=10, t=100, b=20, pad=4),
+               margin = list(l=10, r=10, t=150, b=20, pad=4),
                barmode = "stack",
                yaxis = list(title = "Number of deaths",
                             titlefont = list(size = 16),
@@ -621,7 +622,8 @@ deaths_cod_agegroup <- fiveyears %>%
                xaxis = list(title = "Age group",
                             titlefont = list(size = 16),
                             tickfont = list(size=14)),
-               #title = list(text = "")
+               title = list(text = "Child deaths by age group and cause \nSouth Australia, 2016–2020",
+                            y = 0.93, yanchor = "bottom"),
                legend = list(orientation='h',
                              y=170,
                              y=1,
